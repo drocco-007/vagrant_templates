@@ -67,8 +67,8 @@ done
 
 
 # Symlink needed until we fix custom client loading
-mkdir -p /src/clients/NASM/
-ln -s /brightlink_dev/$CLIENT /src/clients/NASM/trunk
+mkdir -p /src/clients/$BTCLIENT/
+ln -s /brightlink_dev/$CLIENT /src/clients/$BTCLIENT/trunk
 
 
 # Le Database

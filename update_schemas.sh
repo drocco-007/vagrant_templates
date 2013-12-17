@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
+CLIENT=nasm
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PYTHON="/home/vagrant/amft/bin/python"
+PYTHON="/home/vagrant/$CLIENT/bin/python"
 
 SCHEMAS=""
 if [ "$1" == "-m" ]; then
@@ -11,4 +12,4 @@ if [ "$1" == "-m" ]; then
     done
 fi
 
-$PYTHON /home/vagrant/amft/bin/update_schemas.py $DIR/dev.cfg brighttrac:$DIR/../brighttrac/schema/ amftrb_brighttrac:$DIR/schema/ $SCHEMAS
+$PYTHON /home/vagrant/$CLIENT/bin/update_schemas.py $DIR/dev.cfg brighttrac:$DIR/../brighttrac/schema/ ${CLIENT}_brighttrac:$DIR/schema/ $SCHEMAS
