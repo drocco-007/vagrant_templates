@@ -47,4 +47,4 @@ fi
 
 # engage!
 
-$PYTHON /home/vagrant/$CLIENT/bin/update_schemas.py $DIR/../brighttrac/dev.cfg brighttrac:$DIR/../brighttrac/schema/ $CUSTOM_SCHEMA $SCHEMAS
+$PYTHON /home/vagrant/$CLIENT/bin/update_schemas.py $CONFIG brighttrac:$DIR/../brighttrac/schema/ $CUSTOM_SCHEMA $SCHEMAS
