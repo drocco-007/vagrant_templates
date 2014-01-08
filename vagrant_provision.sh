@@ -8,15 +8,20 @@ CLIENT="nasm"
 DBPREFIX=$CLIENT
 BTCLIENT="NASM"
 
-PIP="sudo -u vagrant /home/vagrant/$CLIENT/bin/pip "
-PYTHON="sudo -u vagrant /home/vagrant/$CLIENT/bin/python "
+SUDO="env HOME=/home/vagrant sudo -u vagrant"
+PIP="$SUDO /home/vagrant/$CLIENT/bin/pip install --download-cache /tmp"
+PYTHON="$SUDO /home/vagrant/$CLIENT/bin/python "
 PSQL="sudo -u postgres psql "
+DBLOG="/home/vagrant/db_init.log"
 
 
 # system packages
 apt-get update
 apt-get install -y postgresql subversion git python-pip python-dev libjpeg-dev libz-dev libpq-dev vim git-svn screen
-pip install -U pip virtualenv grin
+pip install --download-cache /tmp -U "pip==1.4.1" setuptools
+
+hash -r
+pip install --download-cache /tmp -U "virtualenv==1.10.1" grin
 
 
 # allow PIL to find 64-bit libs
@@ -30,11 +35,11 @@ echo "cd /brightlink_dev" >> /home/vagrant/.bashrc
 
 
 # create the virtualenv for $CLIENT
-sudo -u vagrant virtualenv /home/vagrant/$CLIENT
+$SUDO virtualenv /home/vagrant/$CLIENT
 
 
 # Special snowflake packages need to be installed first
-$PIP install /brightlink_dev/packages/trml2pdf/trml2pdf-1.0.tar.gz
+$PIP /brightlink_dev/packages/trml2pdf/trml2pdf-1.0.tar.gz
 for package in `find /brightlink_dev/packages/forks -name trunk` ; do
     cd $package
 
@@ -45,9 +50,9 @@ done
 
 
 # Install the base Python packages
-$PIP install --download-cache /tmp -r /brightlink_dev/brighttrac/requirements.txt
-$PIP install --download-cache /tmp -r /brightlink_dev/modules-git/blcore/requirements.txt
-$PIP install --download-cache /tmp pytest pytest-xdist pdbpp
+$PIP -r /brightlink_dev/brighttrac/requirements.txt
+$PIP -r /brightlink_dev/modules-git/blcore/requirements.txt
+$PIP pytest pytest-xdist pdbpp
 
 
 # Install our packages
@@ -75,8 +80,11 @@ ln -s /brightlink_dev/$CLIENT /src/clients/$BTCLIENT/trunk
 
 $PSQL -c "CREATE ROLE core_user LOGIN PASSWORD 'core_pass'"
 $PSQL -c "CREATE ROLE ${DBPREFIX}_user LOGIN PASSWORD '${DBPREFIX}_pass'"
+$PSQL -c "CREATE DATABASE core_data OWNER core_user"
 $PSQL -c "CREATE DATABASE ${DBPREFIX}_data OWNER ${DBPREFIX}_user"
-$PSQL ${DBPREFIX}_data < /brightlink_dev/brighttrac/schema/bt_init.sql
+$PSQL core_data < /brightlink_dev/brighttrac/schema/bt_init.sql > $DBLOG 2>&1
+$PSQL ${DBPREFIX}_data < /brightlink_dev/brighttrac/schema/bt_init.sql > $DBLOG 2>&1
 $PSQL -c "REASSIGN OWNED BY core_user TO ${DBPREFIX}_user" ${DBPREFIX}_data
 
 /brightlink_dev/$CLIENT/update_schemas.sh -m
+/brightlink_dev/$CLIENT/update_schemas.sh -c -m
