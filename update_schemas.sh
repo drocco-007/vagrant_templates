@@ -8,7 +8,6 @@ CLIENT=nasm
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PYTHON="/home/vagrant/$CLIENT/bin/python"
 CONFIG=$DIR/dev.cfg
-INCLUDE_MODULES=0
 CUSTOM_SCHEMA=${CLIENT}_brighttrac:$DIR/schema/
 
 
@@ -37,7 +36,7 @@ done
 # add module updates if requested
 
 SCHEMAS=""
-if [ $INCLUDE_MODULES ]; then
+if [ -v INCLUDE_MODULES ]; then
     for i in blcore blauthentication blconfig blerrorhandling bllang blnotification blexcel blrules blfilter bllocking blscripts blcrypto blintegration blmonitor bltemplates ; do
         thing="$i:$DIR/../modules-git/$i/schema/ "
         SCHEMAS+=$thing
